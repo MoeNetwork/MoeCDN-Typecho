@@ -66,7 +66,6 @@ class MoeCDN_Plugin implements Typecho_Plugin_Interface
 	}
 
 	public static function googleApi_beforeRender($archive){
-		echo "niconiconi";
 		if(Typecho_Widget::widget('Widget_Options')->Plugin('MoeCDN')->gapi == 1)
 			ob_start("moecdn_google_api_buffer");
 	}
