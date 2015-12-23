@@ -19,7 +19,7 @@ class MoeCDN_Plugin implements Typecho_Plugin_Interface
 	 */
 	public static function activate()
 	{
-		Typecho_Plugin::factory('Widget_Archive')->beforeRender = array('MoeCDN_Plugin', 'gravatar');
+		Typecho_Plugin::factory('Widget_Abstract_Comments')->gravatar = array('MoeCDN_Plugin', 'gravatar');
 		Typecho_Plugin::factory('Widget_Archive')->beforeRender = array('MoeCDN_Plugin', 'googleApi_beforeRender');
 	}
 
@@ -57,22 +57,31 @@ class MoeCDN_Plugin implements Typecho_Plugin_Interface
 	*/
 	public static function personalConfig(Typecho_Widget_Helper_Form $form){}
 
-	public static function gravatar(){
+	public static function gravatar($size, $rating, $default, $widget){
 		$gravatarOption = Typecho_Widget::widget('Widget_Options')->Plugin('MoeCDN')->gravatar;
 		if($gravatarOption == 1) 
-			define('__TYPECHO_GRAVATAR_PREFIX__','http://gravatar.moefont.com/avatar/');
-		elseif ($gravatarOption == 2) 
-			define('__TYPECHO_GRAVATAR_PREFIX__','https://gravatar-ssl.moefont.com/avatar/');
+		    $url = 'http://gravatar.moefont.com/avatar/';
+		elseif ($gravatarOption == 2 || $widget->request->isSecure())
+			$url = 'https://gravatar-ssl.moefont.com/avatar/';
+		if(!empty($widget->mail))
+            $url .= md5(strtolower(trim($widget->mail)));
+        $url .= '?s=' . $size;
+        $url .= '&amp;r=' . $rating;
+        $url .= '&amp;d=' . $default;
+        echo '<img class="avatar" src="' . $url . '" alt="' .
+                $widget->author . '" width="' . $size . '" height="' . $size . '" />';
 	}
 
 	public static function googleApi_beforeRender($archive){
 		if(Typecho_Widget::widget('Widget_Options')->Plugin('MoeCDN')->gapi == 1)
-			ob_start("moecdn_google_api_buffer");
+			ob_start(array(__CLASS__, "moecdn_google_api_buffer"));
+	}
+
+	private static function moecdn_google_api_buffer($html){
+		$html = str_replace("//fonts.googleapis.com",  "//cdn.moefont.com/fonts", $html);
+		$html = str_replace("//ajax.googleapis.com",  "//cdn.moefont.com/ajax", $html);
+		return $html;
 	}
 }
 
-function moecdn_google_api_buffer($html){
-	$html = str_replace("//fonts.googleapis.com",  "//cdn.moefont.com/fonts", $html);
-	$html = str_replace("//ajax.googleapis.com",  "//cdn.moefont.com/ajax", $html);
-	return $html;
-}
+
