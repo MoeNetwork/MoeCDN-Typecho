@@ -32,3 +32,12 @@ ajax.googleapis.com -> cdn.moefont.com/ajax
 ## 现在就去下载吧~
 
 点击上面的 Download-Zip，然后解压并修改解压出来的文件夹名字为“MoeCDN”，上传到 Your Typecho/usr/plugins/ 目录下，到后台启用插件即可。
+
+## 关于启用插件提示 500 的说明
+
+ 1. 发生此原因的时候，百分之九十九的情况下删除插件文件夹 ./usr/plugins/MoeCDN-Typecho-master 文件名中的 "-Typecho-master"，仅保留“MoeCDN”或其他名字即可。
+ 2. 如果无法解决问题，请在 config.inc.php 中 加入 ```define("__TYPECHO_DEBUG__",true);``` ，然后复制错误信息到 GitHub issues 页面提问。
+
+## 其他
+
+MoeCDN for Typecho 插件的诞生离不开 [@MoeNetwork](https://github.com/MoeNetwork) 对 MoeCDN 项目的建设以及 [@kokororin](https://github.com/kokororin) 对插件代码的修改优化
