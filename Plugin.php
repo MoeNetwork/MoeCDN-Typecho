@@ -64,12 +64,12 @@ class MoeCDN_Plugin implements Typecho_Plugin_Interface
 		elseif ($gravatarOption == 2 || $widget->request->isSecure())
 			$url = 'https://gravatar-ssl.moefont.com/avatar/';
 		if(!empty($widget->mail))
-            $url .= md5(strtolower(trim($widget->mail)));
-        $url .= '?s=' . $size;
-        $url .= '&amp;r=' . $rating;
-        $url .= '&amp;d=' . $default;
-        echo '<img class="avatar" src="' . $url . '" alt="' .
-                $widget->author . '" width="' . $size . '" height="' . $size . '" />';
+            		$url .= md5(strtolower(trim($widget->mail)));
+        	$url .= '?s=' . $size;
+        	$url .= '&amp;r=' . $rating;
+        	$url .= '&amp;d=' . $default;
+        	echo '<img class="avatar" src="' . $url . '" alt="' .
+                	$widget->author . '" width="' . $size . '" height="' . $size . '" />';
 	}
 
 	public static function googleApi_beforeRender($archive){
