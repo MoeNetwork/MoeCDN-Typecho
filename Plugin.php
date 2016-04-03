@@ -6,7 +6,7 @@ if(!defined("__TYPECHO_ROOT_DIR__")) exit;
 * 
 * @package MoeCDN
 * @author kirainmoe
-* @version 1.0
+* @version 1.1
 * @link https://www.imim.pw/
 */
 class MoeCDN_Plugin implements Typecho_Plugin_Interface
