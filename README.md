@@ -38,6 +38,11 @@ ajax.googleapis.com -> cdn.moefont.com/ajax
  1. 发生此原因的时候，百分之九十九的情况下删除插件文件夹 ./usr/plugins/MoeCDN-Typecho-master 文件名中的 "-Typecho-master"，仅保留“MoeCDN”或其他名字即可。
  2. 如果无法解决问题，请在 config.inc.php 中 加入 ```define("__TYPECHO_DEBUG__",true);``` ，然后复制错误信息到 GitHub issues 页面提问。
 
+## 1.0 ----> 1.1 升级须知
+
+1.0 -> 1.1 主要更新内容是：自动判断协议来请求 MoeCDN 的 Gravatar 源，无需定义 HTTP/HTTPS；针对 #3 提出修改方案。
+**如果您要从 1.0 版本升级到 1.1 版本，请下载最新的代码覆盖即可。由于选项和挂载点的改动，您需要重新激活您的 MoeCDN 插件。**
+
 ## 其他
 
 MoeCDN for Typecho 插件的诞生离不开 [@MoeNetwork](https://github.com/MoeNetwork) 对 MoeCDN 项目的建设以及 [@kokororin](https://github.com/kokororin) 对插件代码的修改优化
