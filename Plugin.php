@@ -1,12 +1,13 @@
 <?php
 if(!defined("__TYPECHO_ROOT_DIR__")) exit;
+
 /**
 * MoeCDN Plugin for Typecho by MoeNet
 * 
 * @package MoeCDN
 * @author kirainmoe
 * @version 1.0
-* @link https://www,imim.pw/
+* @link https://www.imim.pw/
 */
 class MoeCDN_Plugin implements Typecho_Plugin_Interface
 {
@@ -20,7 +21,7 @@ class MoeCDN_Plugin implements Typecho_Plugin_Interface
 	public static function activate()
 	{
 		Typecho_Plugin::factory('Widget_Abstract_Comments')->gravatar = array('MoeCDN_Plugin', 'gravatar');
-		Typecho_Plugin::factory('Widget_Archive')->beforeRender = array('MoeCDN_Plugin', 'googleApi_beforeRender');
+		Typecho_Plugin::factory('Widget_Archive')->beforeRender = array('MoeCDN_Plugin', 'gapis');
 	}
 
 	/**
@@ -42,7 +43,7 @@ class MoeCDN_Plugin implements Typecho_Plugin_Interface
 	*/
 	public static function config(Typecho_Widget_Helper_Form $form)
 	{
-		$gravatar =  new Typecho_Widget_Helper_Form_Element_Radio('gravatar' , array('1'=>_t('开启'),'2'=>"开启，并使用 SSL 模式",'0'=>_t('关闭')),'1',_t('Gravatar 头像加速'),_t('会帮您把默认的 Gravatar 源替换到 MoeCDN Gravatar 源，如果需要 HTTPS 支持，请使用 SSL 模式。'));
+		$gravatar =  new Typecho_Widget_Helper_Form_Element_Radio('gravatar' , array('1'=>_t('开启'),'0'=>_t('关闭')),'1',_t('Gravatar 头像加速'),_t('会帮您把默认的 Gravatar 源替换到 MoeCDN Gravatar 源。此版本的 MoeCDN 将自动选择最适协议。'));
 		$form->addInput($gravatar);
 		$gapi =  new Typecho_Widget_Helper_Form_Element_Radio('gapi' , array('1'=>_t('开启'),'0'=>_t('关闭')),'1',_t('Google API 加速'),_t('使用谷歌公共库可以加快网页加载速度，但是，众所周知的原因，在中国您不能享受这一点。然而现在，一切都不一样了。'));
 		$form->addInput($gapi);		
@@ -57,31 +58,68 @@ class MoeCDN_Plugin implements Typecho_Plugin_Interface
 	*/
 	public static function personalConfig(Typecho_Widget_Helper_Form $form){}
 
-	public static function gravatar($size, $rating, $default, $widget){
+	/**
+	 * 使用 MoeCDN 提供的 Gravatar 服务替换：接口模式。
+	 * 此模式会接管 Widget_Abstract_Comments 类输出评论的接口以获得最佳兼容性，参见 issues #1
+	 * 
+	 * @param  int $size
+	 * @param  string $rating
+	 * @param  int $default
+	 * @param  object $widget
+	 * @return void 
+	 */
+	public static function gravatar($size, $rating, $default, $widget) 
+	{
 		$gravatarOption = Typecho_Widget::widget('Widget_Options')->Plugin('MoeCDN')->gravatar;
-		if($gravatarOption == 1) 
-		    $url = 'http://gravatar.moefont.com/avatar/';
-		elseif ($gravatarOption == 2 || $widget->request->isSecure())
-			$url = 'https://gravatar-ssl.moefont.com/avatar/';
+		if ($gravatarOption == 1) {
+			$url = $widget->request->isSecure() ? 'https://gravatar.moefont.com/avatar' : 'http://gravatar.moefont.com/avatar';
+		}
 		if(!empty($widget->mail))
-            		$url .= md5(strtolower(trim($widget->mail)));
-        	$url .= '?s=' . $size;
-        	$url .= '&amp;r=' . $rating;
-        	$url .= '&amp;d=' . $default;
-        	echo '<img class="avatar" src="' . $url . '" alt="' .
-                	$widget->author . '" width="' . $size . '" height="' . $size . '" />';
+			$url .= md5(strtolower(trim($widget->mail)));
+		$url .= '?s=' . $size;
+		$url .= '&amp;r=' . $rating;
+		$url .= '&amp;d=' . $default;
+		echo '<img class="avatar" src="' . $url . '" alt="' .
+		$widget->author . '" width="' . $size . '" height="' . $size . '" />';
 	}
 
-	public static function googleApi_beforeRender($archive){
+	/**
+	 * 替换 Google APIs
+	 * 
+	 * @param  object $archive
+	 * @return void
+	 */
+	public static function gapis($archive)
+	{
 		if(Typecho_Widget::widget('Widget_Options')->Plugin('MoeCDN')->gapi == 1)
 			ob_start(array(__CLASS__, "moecdn_google_api_buffer"));
 	}
 
-	private static function moecdn_google_api_buffer($html){
+	/**
+	 * 在 Typecho 全局中自由调用头像，适用范围参考 issues #3
+	 * 
+	* @param object $widget
+	* @param string $mail
+	* @return void
+	 */
+	public static function getavatar($widget, $mail = NULL, $size = 40, $rating = 'X', $default = NULL, $class = NULL)
+	{
+		$mail = empty($mail) ? $widget->author->mail : $mail;
+		echo '<img' . (empty($class) ? '' : ' class="' . $class . '"') . ' src="//gravatar.moefont.com/avatar/' .
+		md5($mail) . '?s=' . $size . '&amp;r=' . $rating . '&amp;d=' . $default . '" alt="' .
+		$widget->author->screenName . '" width="' . $size . '" height="' . $size . '" />';
+	}
+
+	/**
+	 * moecdn_google_api_buffer
+	 * 
+	 * @param  string $html
+	 * @return void
+	 */
+	private static function moecdn_google_api_buffer($html)
+	{
 		$html = str_replace("//fonts.googleapis.com",  "//cdn.moefont.com/fonts", $html);
 		$html = str_replace("//ajax.googleapis.com",  "//cdn.moefont.com/ajax", $html);
 		return $html;
 	}
 }
-
-
