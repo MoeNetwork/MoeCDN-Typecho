@@ -72,7 +72,7 @@ class MoeCDN_Plugin implements Typecho_Plugin_Interface
 	{
 		$gravatarOption = Typecho_Widget::widget('Widget_Options')->Plugin('MoeCDN')->gravatar;
 		if ($gravatarOption == 1) {
-			$url = $widget->request->isSecure() ? 'https://gravatar.moefont.com/avatar' : 'http://gravatar.moefont.com/avatar';
+			$url = $widget->request->isSecure() ? 'https://gravatar.moefont.com/avatar/' : 'http://gravatar.moefont.com/avatar/';
 		}
 		if(!empty($widget->mail))
 			$url .= md5(strtolower(trim($widget->mail)));
