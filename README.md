@@ -2,6 +2,9 @@
 
 MoeCDN Plugin for Typecho 0.9 or later version ( MoeNet.Inc )
 
+## Deprecated
+
+This plugin is deprecated now, becase ```moefont``` has been broken for a long time. You can still download or refer to this plugin, but the functions of this plugin will not work properly.
 -----
 
 插件和MoeCDN的建设暂时处于开始阶段，因此我们很抱歉无法提供很多的功能。
